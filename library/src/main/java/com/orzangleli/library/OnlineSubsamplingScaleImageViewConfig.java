@@ -19,12 +19,15 @@ public class OnlineSubsamplingScaleImageViewConfig {
     private static String cacheDir;
     private static Context appContext;
 
-    public void initialize(Context context, String dir) {
+    public static void initialize(Context context, String dir) {
         appContext = context;
         cacheDir = dir;
     }
 
     public static String getCacheDir() {
+        if (cacheDir == null) {
+            throw new IllegalArgumentException("cacheDir is null, try to use {OnlineSubsamplingScaleImageViewConfig#initialize} to initialize!");
+        }
         return cacheDir;
     }
 
