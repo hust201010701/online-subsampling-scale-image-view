@@ -24,8 +24,8 @@ import com.orzangleli.library.view.OnlineSubsamplingScaleImageView;
  */
 
 public class MessageHandler extends Handler {
-    static final String FILE_SCHEME = "file:///";
-    static final String ASSET_SCHEME = "file:///android_asset/";
+    public static final String FILE_SCHEME = "file:///";
+    public static final String ASSET_SCHEME = "file:///android_asset/";
 
     public static final int START = 1;
     public static final int PROGRESS = 2;
@@ -75,21 +75,10 @@ public class MessageHandler extends Handler {
                 break;
             case COMPLETE:
                 if (msg.arg1 == NOTTHUMBNAIL) {
-                    // 显示下载文件
-                    String path = DownloadManager.getInstance().getCacheFileByUrl(holder.entity.getUrl());
-                    if (path != null) {
-                        holder.imageView.setImage(ImageSource.uri(Uri.parse(FILE_SCHEME+path)));
-                    }
                     if (imageDownloadListener != null) {
                         imageDownloadListener.onComplete(holder.entity);
                     }
                 } else {
-                    // 显示下载文件
-                    String path = DownloadManager.getInstance().getCacheFileByUrl(holder.entity.getUrl());
-                    if (path != null) {
-                        holder.imageView.setImage((ImageSource) null, ImageSource.uri(Uri.parse(FILE_SCHEME+path)));
-                    }
-
                     if (thumbnailImageDownloadListener != null) {
                         thumbnailImageDownloadListener.onComplete(holder.entity);
                     }
