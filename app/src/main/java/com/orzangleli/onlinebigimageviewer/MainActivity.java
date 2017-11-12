@@ -11,8 +11,6 @@ import com.orzangleli.library.bean.DownloadImageEntity;
 import com.orzangleli.library.callback.DownloadCallback;
 import com.orzangleli.library.view.OnlineSubsamplingScaleImageView;
 
-import static com.orzangleli.library.callback.MessageHandler.FILE_SCHEME;
-
 public class MainActivity extends AppCompatActivity {
 
     OnlineSubsamplingScaleImageView imageView;
@@ -26,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     String smallImage1 = "file:///storage/emulated/0/DCIM/Alipay/1493543430385.jpg";
 
     Button button;
+
+    // todo 缓存判断后还是需要有进度和完成回调
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
                 super.onProgress(entity);
                 Log.i("lxc", "ImageDownloadListener ---> " + entity.getPercent());
             }
+
+            @Override
+            public void onComplete(DownloadImageEntity entity) {
+                super.onComplete(entity);
+                Log.i("lxc", "width ---> " + entity.getWidth()
+                +"\nheight ---> " + entity.getHeight()
+                +"\nfile_length ---> " + entity.getFileLength());
+            }
         });
         imageView.setThumbnailImageDownloadListener(new DownloadCallback(){
             @Override
@@ -53,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageView.setImageUri(sjdt, thumbUrl);
+                imageView.setImageUri(bigImage1, thumbUrl);
             }
         });
 

@@ -19,12 +19,13 @@ import java.io.IOException;
  * <p>@version
  */
 
-public class DownloadImageEntity {
+ public class DownloadImageEntity {
     private String url;
     private double percent;
     private int width;
     private int height;
     private long fileLength;
+    private String failureImage;
 
     public String getUrl() {
         return url;
@@ -64,5 +65,13 @@ public class DownloadImageEntity {
 
     public void setFileLength(long fileLength) {
         this.fileLength = fileLength;
+    }
+
+    public String getFailureImage() {
+        return failureImage;
+    }
+
+    public void setFailureImage(String failureImage) {
+        this.failureImage = failureImage;
     }
 }

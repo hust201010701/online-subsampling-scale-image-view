@@ -37,11 +37,9 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
 
     private MessageHandler messageHandler;
 
-
     public OnlineSubsamplingScaleImageView(Context context) {
         this(context, null);
     }
-
 
     public OnlineSubsamplingScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
@@ -117,6 +115,11 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
                         loadOnlineImage(url);
                     } else {
                         if (!StringUtils.isEmpty(url)) {
+                            DownloadImageEntity entity2 = new DownloadImageEntity();
+                            entity2.setUrl(url);
+                            if (imageDownloadListener != null) {
+                                imageDownloadListener.onStart(entity2);
+                            }
                             // 原图是本地的，直接加载就行
                             OnlineSubsamplingScaleImageView.this.post(new Runnable() {
                                 @Override
@@ -124,6 +127,10 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
                                     OnlineSubsamplingScaleImageView.this.setImage(ImageSource.uri(Uri.parse(url)), state);
                                 }
                             });
+                            if (imageDownloadListener != null) {
+                                DownloadManager.calculateImageSizeAndFileLength(entity2);
+                                imageDownloadListener.onComplete(entity2);
+                            }
                         }
                     }
                     // 通知下载成功
@@ -147,6 +154,11 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
             });
         } else {
             if (StringUtils.isOnlinePicture(url)) {
+                DownloadImageEntity thumbEntity = new DownloadImageEntity();
+                thumbEntity.setUrl(thumbUrl);
+                if (thumbnailImageDownloadListener != null) {
+                    thumbnailImageDownloadListener.onStart(thumbEntity);
+                }
                 if (!StringUtils.isEmpty(thumbUrl)) {
                     OnlineSubsamplingScaleImageView.this.post(new Runnable() {
                         @Override
@@ -155,9 +167,19 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
                         }
                     });
                 }
+                if (thumbnailImageDownloadListener != null) {
+                    DownloadManager.calculateImageSizeAndFileLength(thumbEntity);
+                    thumbnailImageDownloadListener.onComplete(thumbEntity);
+                }
                 // 原图是在线的，需要先去下载，准备加载原图
                 loadOnlineImage(url);
+
             } else {
+                DownloadImageEntity entity = new DownloadImageEntity();
+                entity.setUrl(url);
+                if (imageDownloadListener != null) {
+                    imageDownloadListener.onStart(entity);
+                }
                 // 如果缩略图和原图都是本地图片，直接显示原图
                 OnlineSubsamplingScaleImageView.this.post(new Runnable() {
                     @Override
@@ -165,6 +187,10 @@ public class OnlineSubsamplingScaleImageView extends SubsamplingScaleImageView {
                         OnlineSubsamplingScaleImageView.this.setImage(ImageSource.uri(url), state);
                     }
                 });
+                if (imageDownloadListener != null) {
+                    DownloadManager.calculateImageSizeAndFileLength(entity);
+                    imageDownloadListener.onComplete(entity);
+                }
             }
         }
 

@@ -13,6 +13,8 @@ import com.orzangleli.library.callback.DownloadCallback;
 import com.orzangleli.library.util.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,7 +79,42 @@ public class DownloadManager {
         runnable.execute(executor);
     }
 
-    public String getCacheFileByUrl (String url) {
+
+    /**
+     * set width and height into downloadImageEntity
+     * and set file length into downloadImageEntity
+     * @param downloadImageEntity
+     */
+    public static void calculateImageSizeAndFileLength(DownloadImageEntity downloadImageEntity) {
+        String bitmapPath = null;
+        if (!StringUtils.isOnlinePicture(downloadImageEntity.getUrl())) {
+            bitmapPath = downloadImageEntity.getUrl();
+            if (bitmapPath.contains("file://")) {
+                bitmapPath = bitmapPath.substring("file://".length());
+            }
+        } else if (StringUtils.isEmpty(DownloadManager.getCacheFileByUrl(downloadImageEntity.getUrl()))) {
+            bitmapPath = DownloadManager.getCacheFileByUrl(downloadImageEntity.getUrl());
+        }
+        if (StringUtils.isEmpty(bitmapPath)) {
+            return ;
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        try {
+            BitmapFactory.decodeStream(new FileInputStream(bitmapPath), null, options);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        downloadImageEntity.setWidth(options.outWidth);
+        downloadImageEntity.setHeight(options.outHeight);
+
+        File imageFile = new File(bitmapPath);
+        if (imageFile != null && imageFile.exists()) {
+            downloadImageEntity.setFileLength(imageFile.length());
+        }
+    }
+
+    public static String getCacheFileByUrl (String url) {
         String key = StringUtils.getStringByMD5(url);
         File dir = diskLruCache.getDirectory();
         String filename = key + ".0";

@@ -1,11 +1,16 @@
 package com.orzangleli.library.download;
 
+import android.graphics.BitmapFactory;
+
 import com.jakewharton.disklrucache.DiskLruCache;
 import com.orzangleli.library.bean.DownloadImageEntity;
 import com.orzangleli.library.callback.DownloadCallback;
 import com.orzangleli.library.util.StringUtils;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -84,6 +89,9 @@ public class ImageDownloadRunnable extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                // calculate width and height of the image
+                DownloadManager.calculateImageSizeAndFileLength(downloadImageEntity);
+
                 if (callback != null) {
                     callback.onComplete(downloadImageEntity);
                 }
@@ -128,10 +136,9 @@ public class ImageDownloadRunnable extends Thread {
 
     // todo 添加请求头
     private void addHeader(HttpURLConnection connection) {
-//        connection.setConnectTimeout(5*1000);
-//        connection.setReadTimeout(10*1000);
-//        connection.setDoInput(true);
-//        connection.setDoOutput(true);
+        connection.setConnectTimeout(5*1000);
+        connection.setReadTimeout(5*1000);
+        connection.setDoInput(true);
     }
 
     private void checkBeforeConnect() {
